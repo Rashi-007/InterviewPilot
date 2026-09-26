@@ -1,0 +1,33 @@
+{
+  "name": "interviewpilot-extension",
+  "displayName": "InterviewPilot AI",
+  "version": "1.0.0",
+  "description": "Auto-captures job applications from LinkedIn/Indeed/company sites and detects interview emails in Gmail — syncs straight into your InterviewPilot AI dashboard.",
+  "author": "InterviewPilot AI",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "plasmo": "^0.89.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "@types/react": "18.2.55",
+    "@types/react-dom": "18.2.19",
+    "typescript": "5.3.3"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*.linkedin.com/*",
+      "https://*.indeed.com/*",
+      "https://mail.google.com/*",
+      "http://localhost:5000/*",
+      "https://*/*"
+    ],
+    "permissions": ["storage", "activeTab", "scripting"]
+  }
+}
