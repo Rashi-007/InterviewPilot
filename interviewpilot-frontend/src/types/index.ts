@@ -74,3 +74,8 @@ export const STATUS_COLUMNS: { key: ApplicationStatus; label: string }[] = [
   { key: "offer", label: "Offer" },
   { key: "rejected", label: "Rejected" },
 ];
+
+export interface AIGeneratedQuestion {
+  question: string;
+  type: "technical" | "behavioral";
+}

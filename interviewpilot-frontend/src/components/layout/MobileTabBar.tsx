@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, KanbanSquare, Mic, Sparkles, Settings } from "lucide-react";
+import { LayoutDashboard, KanbanSquare, Mic, Sparkles, Settings, Building2 } from "lucide-react";
 import clsx from "clsx";
 
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/applications", label: "Apps", icon: KanbanSquare },
   { to: "/mock-interview", label: "Mock", icon: Mic },
+  { to: "/company-questions", label: "Companies", icon: Building2 },
   { to: "/insights", label: "Insights", icon: Sparkles },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

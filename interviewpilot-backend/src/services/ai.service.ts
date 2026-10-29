@@ -122,3 +122,21 @@ export async function generatePrepPlan(
 
   return askForJSON<AIPrepPlan>(system, user);
 }
+
+/** Generates company and role focused practice questions with Gemini. */
+export async function generateCompanyInterviewQuestions(
+  companyName: string,
+  roleTitle: string
+): Promise<AIGeneratedQuestion[]> {
+  const system =
+    "You are an interview preparation coach. Respond ONLY with a JSON object shaped like " +
+    '{ "questions": [{ "question": string, "type": "technical" | "behavioral" }] }. ' +
+    "No extra commentary or markdown.";
+  const user =
+    `Create 8 useful practice questions for a candidate applying to ${companyName} as ${roleTitle}. ` +
+    "Make them relevant to the role and the company's publicly known products, business, and engineering context where your knowledge supports it. " +
+    "These are predicted practice questions, not verified questions from past interviews. Include a mix of technical and behavioral questions.";
+
+  const result = await askForJSON<{ questions: AIGeneratedQuestion[] }>(system, user);
+  return result.questions;
+}

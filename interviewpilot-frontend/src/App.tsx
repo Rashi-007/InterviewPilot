@@ -5,6 +5,7 @@ import { MockInterview } from "@/pages/MockInterview";
 import { Insights } from "@/pages/Insights";
 import { Settings } from "@/pages/Settings";
 import { Login } from "@/pages/Login";
+import { CompanyQuestions } from "@/pages/CompanyQuestions";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/" element={<Overview />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/mock-interview" element={<MockInterview />} />
+        <Route path="/company-questions" element={<CompanyQuestions />} />
         <Route path="/insights" element={<Insights />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>

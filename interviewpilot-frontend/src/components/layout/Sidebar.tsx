@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, KanbanSquare, Mic, Sparkles, Settings, Radio } from "lucide-react";
+import { LayoutDashboard, KanbanSquare, Mic, Sparkles, Settings, Radio, Building2 } from "lucide-react";
 import clsx from "clsx";
 import { useAppStore } from "@/store/useStore";
 
@@ -7,6 +7,7 @@ const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/applications", label: "Applications", icon: KanbanSquare },
   { to: "/mock-interview", label: "Mock Interview", icon: Mic },
+  { to: "/company-questions", label: "Company Questions", icon: Building2 },
   { to: "/insights", label: "Insights", icon: Sparkles },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

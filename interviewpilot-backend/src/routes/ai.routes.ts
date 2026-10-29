@@ -7,11 +7,33 @@ import {
   evaluateAnswer,
   analyzeJobDescription,
   generatePrepPlan,
+  generateCompanyInterviewQuestions,
 } from "../services/ai.service";
 // import { InterviewQA } from "../types";
 
 const router = Router();
 router.use(requireAuth);
+
+const companyQuestionsSchema = z.object({
+  company_name: z.string().trim().min(1).max(100),
+  role_title: z.string().trim().min(1).max(120),
+});
+
+router.post("/company-questions", async (req, res) => {
+  const parsed = companyQuestionsSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  try {
+    const questions = await generateCompanyInterviewQuestions(
+      parsed.data.company_name,
+      parsed.data.role_title
+    );
+    res.json({ questions });
+  } catch (error) {
+    console.error("Company interview question generation failed:", error);
+    res.status(502).json({ error: "Couldn't generate questions right now. Please try again." });
+  }
+});
 
 // ---------------------------------------------------------
 // POST /api/ai/mock-interview/start
