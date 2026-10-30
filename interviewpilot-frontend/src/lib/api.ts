@@ -1,4 +1,8 @@
-const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
+const RENDER_API_URL = "https://interviewpilot-backend-syly.onrender.com";
+const API_ORIGIN = import.meta.env.DEV
+  ? ""
+  : (import.meta.env.VITE_API_URL || RENDER_API_URL).replace(/\/+$/, "");
+const API_BASE = `${API_ORIGIN}/api`;
 
 function getToken(): string | null {
   return localStorage.getItem("ip_token");
