@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Puzzle, Key, LogOut, LogIn, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Puzzle,
+  Key,
+  LogOut,
+  LogIn,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -9,7 +16,7 @@ import { clearToken } from "@/lib/api";
 
 export function Settings() {
   const demoMode = useAppStore((s) => s.demoMode);
-  const [apiUrl, setApiUrl] = useState("http://localhost:5000");
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const navigate = useNavigate();
 
   return (
@@ -18,14 +25,18 @@ export function Settings() {
         <Card>
           <div className="flex items-center gap-2 mb-4">
             <Key size={16} className="text-signal-violet" />
-            <h2 className="font-display font-semibold text-ink">Backend Connection</h2>
+            <h2 className="font-display font-semibold text-ink">
+              Backend Connection
+            </h2>
           </div>
           <div className="flex items-center justify-between rounded-lg border border-surface-border px-4 py-3 mb-4">
             <div className="flex items-center gap-2 text-sm">
               {demoMode ? (
                 <>
                   <XCircle size={15} className="text-status-hr" />
-                  <span className="text-ink">Not connected — showing demo data</span>
+                  <span className="text-ink">
+                    Not connected — showing demo data
+                  </span>
                 </>
               ) : (
                 <>
@@ -36,40 +47,49 @@ export function Settings() {
             </div>
           </div>
           <label className="block">
-            <span className="text-xs font-medium text-ink-muted">API Base URL</span>
+            <span className="text-xs font-medium text-ink-muted">
+              API Base URL
+            </span>
             <input
               value={apiUrl}
-              onChange={(e) => setApiUrl(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-surface-border bg-surface-raised/60 px-3 py-2.5 text-sm text-ink font-mono outline-none focus:border-signal-cyan/50"
+              readOnly
+              className="mt-1.5 w-full rounded-lg border border-surface-border bg-surface-raised/60 px-3 py-2.5 text-sm text-ink font-mono outline-none"
             />
           </label>
           <p className="text-xs text-ink-faint mt-2">
-            Requests are proxied through Vite's dev server to this address — see vite.config.ts.
+            API requests are sent directly to your configured backend server.
           </p>
         </Card>
 
         <Card>
           <div className="flex items-center gap-2 mb-4">
             <Puzzle size={16} className="text-signal-cyan" />
-            <h2 className="font-display font-semibold text-ink">Browser Extension</h2>
+            <h2 className="font-display font-semibold text-ink">
+              Browser Extension
+            </h2>
           </div>
           <div className="flex items-center justify-between rounded-lg border border-surface-border px-4 py-3">
             <div className="flex items-center gap-2 text-sm">
               <XCircle size={15} className="text-ink-faint" />
               <span className="text-ink-muted">Extension not detected</span>
             </div>
-            <span className="text-xs text-ink-faint">Load unpacked in chrome://extensions</span>
+            <span className="text-xs text-ink-faint">
+              Load unpacked in chrome://extensions
+            </span>
           </div>
           <p className="text-xs text-ink-faint mt-3">
-            Once installed, the extension will auto-capture job postings and sync interview
-            emails detected in Gmail. Sync status will appear here.
+            Once installed, the extension will auto-capture job postings and
+            sync interview emails detected in Gmail. Sync status will appear
+            here.
           </p>
         </Card>
 
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-display font-semibold text-ink mb-1">Demo Account</h2>
+              <h2 className="font-display font-semibold text-ink mb-1">
+                Demo Account
+              </h2>
               <p className="text-xs text-ink-muted">demo@interviewpilot.ai</p>
             </div>
             {demoMode ? (

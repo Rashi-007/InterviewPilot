@@ -34,9 +34,14 @@ export const useAppStore = create<AppState>((set, get) => ({
       const apps = await api<Application[]>("/applications");
       set({ applications: apps, demoMode: false, loading: false });
     } catch (err) {
-      // Backend unreachable or erroring — fall back to demo data so the
-      // UI stays fully explorable (useful while backend setup is in progress).
-      set({ applications: MOCK_APPLICATIONS, demoMode: true, loading: false });
+      console.error("Failed to fetch applications:", err);
+
+      set({
+        applications: MOCK_APPLICATIONS,
+        demoMode: true,
+        loading: false,
+        error: err instanceof Error ? err.message : "Backend connection failed",
+      });
     }
   },
 
@@ -48,15 +53,23 @@ export const useAppStore = create<AppState>((set, get) => ({
     try {
       const kpis = await api<KPIs>("/applications/kpis");
       set({ kpis });
-    } catch {
-      set({ kpis: MOCK_KPIS, demoMode: true });
+    } catch (err) {
+      console.error("Failed to fetch KPIs:", err);
+
+      set({
+        kpis: MOCK_KPIS,
+        demoMode: true,
+        error: err instanceof Error ? err.message : "Failed to fetch KPIs",
+      });
     }
   },
 
   updateStatus: async (id, status) => {
     const prev = get().applications;
     // Optimistic update — the whole point of a Kanban drag is that it feels instant.
-    set({ applications: prev.map((a) => (a.id === id ? { ...a, status } : a)) });
+    set({
+      applications: prev.map((a) => (a.id === id ? { ...a, status } : a)),
+    });
 
     if (get().demoMode) return; // demo mode: local-only, nothing to sync
 
@@ -89,7 +102,10 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({ applications: [newApp, ...get().applications] });
       return;
     }
-    const created = await api<Application>("/applications", { method: "POST", body: app });
+    const created = await api<Application>("/applications", {
+      method: "POST",
+      body: app,
+    });
     set({ applications: [created, ...get().applications] });
   },
 
