@@ -1,4 +1,4 @@
-# Render Blueprint for the backend. Put this file at the ROOT of your GitHub repo.
+# Render Blueprint for the InterviewPilot backend.
 services:
   - type: web
     name: interviewpilot-backend
@@ -24,4 +24,4 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS
-        value: "http://localhost:5173,https://interview-pilot-seven.vercel.app,chrome-extension://bfiicleboboajnioeclhcgoccbgogoek"
+        value: "http://localhost:5173,https://interview-pilot-seven.vercel.app,chrome-extension://bflicleboboajnioeclhcgoccbgogoek"
