@@ -1,6 +1,7 @@
 import { ApplicationStatus } from "@/types";
 
 const CONFIG: Record<ApplicationStatus, { label: string; text: string; bg: string; dot: string }> = {
+  viewed: { label: "Viewed", text: "text-signal-cyan", bg: "bg-signal-cyan/10", dot: "bg-signal-cyan" },
   applied: { label: "Applied", text: "text-ink-muted", bg: "bg-white/5", dot: "bg-ink-muted" },
   screening: { label: "Screening", text: "text-signal-cyan", bg: "bg-signal-cyan/10", dot: "bg-signal-cyan" },
   technical: { label: "Technical", text: "text-signal-violet", bg: "bg-signal-violet/10", dot: "bg-signal-violet" },
