@@ -8,7 +8,7 @@ import { useAppStore } from "@/store/useStore";
 import { clearToken } from "@/lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://interviewpilot-backend-syly.onrender.com";
-const EXTENSION_ID = "bflicleboboajnioeclhcgoccbgogoek";
+const EXTENSION_ID = "bfiicleboboajnioeclhcgoccbgogoek";
 
 export function Settings() {
   const demoMode = useAppStore((s) => s.demoMode);
