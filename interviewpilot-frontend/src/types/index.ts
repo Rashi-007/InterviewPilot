@@ -1,4 +1,5 @@
 export type ApplicationStatus =
+  | "viewed"
   | "applied"
   | "screening"
   | "technical"
@@ -67,6 +68,7 @@ export interface User {
 }
 
 export const STATUS_COLUMNS: { key: ApplicationStatus; label: string }[] = [
+  { key: "viewed", label: "Viewed" },
   { key: "applied", label: "Applied" },
   { key: "screening", label: "Screening" },
   { key: "technical", label: "Technical" },
