@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://interviewpilot-frontend.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://interviewpilot-backend-syly.onrender.com/api/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
