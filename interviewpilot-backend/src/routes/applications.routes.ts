@@ -68,7 +68,7 @@ router.get("/kpis", async (req, res) => {
   if (sessionsError) return res.status(500).json({ error: sessionsError.message });
 
   const total = apps?.length || 0;
-  const interviews = apps?.filter((a) => a.status !== "applied").length || 0;
+  const interviews = apps?.filter((a) => ["screening", "technical", "hr"].includes(a.status)).length || 0;
   const offers = apps?.filter((a) => a.status === "offer").length || 0;
 
   const lastApplied = apps?.length
