@@ -1,69 +1,93 @@
 import type { PlasmoCSConfig } from "plasmo";
 import type { JobCapturePayload } from "~lib/types";
 
+// Runs on all Indeed pages (including in.indeed.com). It only captures when
+// a job is actually open: either a /viewjob page (?jk=<id>) or the split
+// view on search pages (?vjk=<id>).
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.indeed.com/viewjob*", "https://*.indeed.com/viewjob*"],
+  matches: ["https://*.indeed.com/*"],
   run_at: "document_idle",
 };
 
-let lastScrapedUrl = "";
+const log = (...a: unknown[]) => console.log("[InterviewPilot]", ...a);
+log("content script loaded on", window.location.href);
 
-function scrapeIndeedJob(): JobCapturePayload | null {
-  const titleEl = document.querySelector<HTMLElement>(
-    "h1.jobsearch-JobInfoHeader-title, [data-testid='jobsearch-JobInfoHeader-title']"
-  );
-  const companyEl = document.querySelector<HTMLElement>(
-    "[data-testid='inlineHeader-companyName'], .jobsearch-InlineCompanyRating-companyHeader"
-  );
-  const locationEl = document.querySelector<HTMLElement>(
-    "[data-testid='inlineHeader-companyLocation']"
-  );
-  const descriptionEl = document.querySelector<HTMLElement>("#jobDescriptionText");
+function jobKey(): string | null {
+  const u = new URL(window.location.href);
+  return u.searchParams.get("jk") || u.searchParams.get("vjk");
+}
+// Same clean address whichever layout the job was opened from.
+const canonicalUrl = (key: string) => `${window.location.origin}/viewjob?jk=${key}`;
 
-  const roleTitle = titleEl?.innerText?.trim();
-  const companyName = companyEl?.innerText?.trim();
+function firstText(selectors: string[]): string | undefined {
+  for (const s of selectors) {
+    const t = document.querySelector<HTMLElement>(s)?.innerText?.trim();
+    if (t) return t;
+  }
+  return undefined;
+}
 
+function scrape(key: string): JobCapturePayload | null {
+  const roleTitle = firstText([
+    "h1.jobsearch-JobInfoHeader-title",
+    "[data-testid='jobsearch-JobInfoHeader-title']",
+    "h1",
+  ]);
+  const companyName = firstText([
+    "[data-testid='inlineHeader-companyName']",
+    "[data-company-name='true']",
+    ".jobsearch-InlineCompanyRating-companyHeader",
+  ]);
   if (!roleTitle || !companyName) return null;
 
   return {
     role_title: roleTitle,
     company_name: companyName,
-    location: locationEl?.innerText?.trim(),
-    job_description: descriptionEl?.innerText?.trim()?.slice(0, 5000),
-    job_url: window.location.href.split("&")[0], // strip Indeed's tracking query params
+    location: firstText([
+      "[data-testid='inlineHeader-companyLocation']",
+      "[data-testid='job-location']",
+    ]),
+    job_description: firstText(["#jobDescriptionText"])?.slice(0, 5000),
+    job_url: canonicalUrl(key),
     source: "extension_indeed",
   };
 }
 
-function attemptScrape() {
-  const url = window.location.href;
-  if (url === lastScrapedUrl) return;
+let lastCapturedKey = "";
+let pending = false;
 
-  const job = scrapeIndeedJob();
-  if (!job) return;
-
-  lastScrapedUrl = url;
-  chrome.runtime.sendMessage({ type: "JOB_CAPTURED", payload: job });
+function check() {
+  const key = jobKey();
+  if (!key || key === lastCapturedKey || pending) return;
+  pending = true;
+  log("job id found:", key, "- waiting for the page to render");
+  window.setTimeout(() => {
+    pending = false;
+    if (jobKey() !== key) return;
+    const job = scrape(key);
+    if (job) log("scraped:", job.role_title, "|", job.company_name);
+    else log("scrape found no title/company yet - selectors may not match this page");
+    if (!job) return;
+    lastCapturedKey = key;
+    chrome.runtime.sendMessage({ type: "JOB_CAPTURED", payload: job }, (reply) =>
+      log("background replied:", JSON.stringify(reply), chrome.runtime.lastError?.message ?? "")
+    );
+  }, 1200);
 }
 
-const observer = new MutationObserver(() => attemptScrape());
-observer.observe(document.body, { childList: true, subtree: true });
-attemptScrape();
+new MutationObserver(check).observe(document.body, { childList: true, subtree: true });
+check();
 
-// --- Application submission detection ---
-// Indeed's own "Apply now" flow ends on a page containing a clear
-// confirmation heading. External "Apply on company site" clicks aren't
-// detectable from here — those get picked up by the generic detector
-// content script on the company's own site instead.
-function checkForConfirmation() {
+// --- Application confirmation -> mark as Applied ---
+new MutationObserver(() => {
   const heading = document.querySelector("h1, h2");
   if (heading?.textContent?.match(/application (submitted|sent)|you('|’)ve applied/i)) {
-    chrome.runtime.sendMessage({
-      type: "APPLICATION_SUBMITTED",
-      payload: { job_url: lastScrapedUrl || window.location.href.split("&")[0] },
-    });
+    const key = lastCapturedKey || jobKey();
+    if (key) {
+      chrome.runtime.sendMessage({
+        type: "APPLICATION_SUBMITTED",
+        payload: { job_url: canonicalUrl(key) },
+      });
+    }
   }
-}
-
-const confirmObserver = new MutationObserver(checkForConfirmation);
-confirmObserver.observe(document.body, { childList: true, subtree: true });
+}).observe(document.body, { childList: true, subtree: true });
